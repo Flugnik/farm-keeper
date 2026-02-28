@@ -12,9 +12,14 @@ chcp 65001 | Out-Null
 $healthUrl = "http://127.0.0.1:8011/health"
 $gatewayPort = 18789
 
+# Tunables for cold start
+$healthTimeoutSec = 5     # per-request timeout
+$waitTotalSec     = 60    # total warmup time
+$waitStepMs       = 500   # polling interval
+
 function Test-Health {
   try {
-    $r = Invoke-RestMethod $healthUrl -TimeoutSec 1
+    $r = Invoke-RestMethod $healthUrl -TimeoutSec $healthTimeoutSec
     return ($r.status -eq "ok")
   } catch { return $false }
 }
@@ -33,13 +38,22 @@ if (-not (Test-Health)) {
   ) -WorkingDirectory (Get-Location).Path
 }
 
-# wait up to 10s for health
+# wait for health
 $ok = $false
-1..20 | ForEach-Object {
-  if (Test-Health) { $ok = $true; return }
-  Start-Sleep -Milliseconds 500
+$maxIters = [int](($waitTotalSec * 1000) / $waitStepMs)
+for ($i=1; $i -le $maxIters; $i++) {
+  if (Test-Health) { $ok = $true; break }
+  if ($i -eq 1 -or ($i % 10 -eq 0)) { Write-Host "[run_all] waiting memory_service warmup... ($([int]($i*$waitStepMs/1000))s)" }
+  Start-Sleep -Milliseconds $waitStepMs
 }
-if (-not $ok) { throw "[run_all] memory_service did not become healthy within 10s" }
+
+if (-not $ok) {
+  $pid8011 = Get-ListenerPid 8011
+  if ($pid8011) {
+    Write-Host "[run_all] memory_service port 8011 is listening (pid $pid8011) but /health not OK within ${waitTotalSec}s"
+  }
+  throw "[run_all] memory_service did not become healthy within ${waitTotalSec}s"
+}
 
 # If gateway already running -> exit clean
 $gPid = Get-ListenerPid $gatewayPort
