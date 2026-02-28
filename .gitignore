@@ -13,3 +13,12 @@ farm_memory/db/
 
 # Logs
 *.log
+
+# OpenClaw runtime/cache
+memory/
+logs/
+agents/main/sessions/
+agents/main/agent/auth.json
+agents/main/agent/auth-profiles.json
+exec-approvals.json
+*.bak
