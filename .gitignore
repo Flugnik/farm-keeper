@@ -1,0 +1,36 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv/
+venv/
+*.log
+
+# HuggingFace / transformers cache (огромное)
+.cache/
+**/.cache/
+hf_cache/
+huggingface/
+
+# local DBs / secrets (по желанию)
+farm_memory/db/*.db
+farm_memory/db/*.sqlite
+farm_memory/db/*.sqlite3
+workspace/
+# ---- runtime / local state ----
+agents/main/agent/auth*.json
+agents/main/sessions/
+identity/
+devices/
+exec-approvals.json
+logs/
+memory/*.sqlite
+memory/*.db
+cron/jobs.json
+cron/jobs.json.bak
+
+# ---- backups / temp ----
+openclaw.json.bak*
+*.reset.*
+*.jsonl

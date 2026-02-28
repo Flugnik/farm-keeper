@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "nodeId": "0ca20006-06fb-4eca-8827-8afe6bbcd468",
+  "displayName": "memory-node",
+  "gateway": {
+    "host": "127.0.0.1",
+    "port": 18789,
+    "tls": false
+  }
+}
