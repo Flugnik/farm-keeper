@@ -22,3 +22,5 @@ agents/main/agent/auth.json
 agents/main/agent/auth-profiles.json
 exec-approvals.json
 *.bak
+# OpenClaw patcher backups
+*.bak.*
